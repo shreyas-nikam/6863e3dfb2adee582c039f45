@@ -1,95 +1,51 @@
 
-def calculate_compound_interest(
-    principal: float,
-    rate: float,
-    duration: int,
-    compounding_frequency: str
-) -> list:
-    """
-    Calculates the future value of an investment using compound interest formula over each year.
+def calculate_monthly_payment(loan_amount: float, annual_interest_rate: float, loan_term: int) -> float:
+    """Calculates the monthly mortgage payment.
 
     Args:
-        principal (float): The initial amount of money invested.
-        rate (float): The annual interest rate as a decimal.
-        duration (int): The total number of years for the investment.
-        compounding_frequency (str): 'Monthly' or 'Annually'.
+        loan_amount: The principal amount of the loan.
+        annual_interest_rate: The annual interest rate (as a decimal).
+        loan_term: The loan term in years.
 
     Returns:
-        list: A list of floating point numbers representing the future value at each year.
+        The calculated monthly mortgage payment.
 
     Raises:
-        ValueError: If compounding_frequency is invalid.
-        TypeError: If principal, rate, or duration are not numbers or are invalid.
+        ValueError: If loan_amount, annual_interest_rate, or loan_term are negative.
+        TypeError: If loan_amount, annual_interest_rate, or loan_term are of incorrect type.
+        ZeroDivisionError: If loan_term is zero.
     """
-    if principal is None or rate is None or duration is None:
-        raise TypeError("Principal, rate, and duration must not be None")
-    if not isinstance(principal, (int, float)):
-        raise TypeError("Principal must be a number")
-    if not isinstance(rate, (int, float)):
-        raise TypeError("Rate must be a number")
-    if not isinstance(duration, int):
-        raise TypeError("Duration must be an integer")
-    if duration < 0:
-        return []
 
-    if compounding_frequency == 'Monthly':
-        n = 12
-    elif compounding_frequency == 'Annually':
-        n = 1
-    else:
-        raise ValueError("Invalid compounding frequency. Expected 'Monthly' or 'Annually'.")
-
-    result = []
-    for year in range(1, duration + 1):
-        total_periods = n * year
-        future_value = principal * (1 + rate / n) ** total_periods
-        result.append(future_value)
-    return result
+    if not isinstance(loan_amount, (int, float)):
+        raise TypeError("Loan amount must be a number")
+    if not isinstance(annual_interest_rate, (int, float)):
+        raise TypeError("Annual interest rate must be a number")
+    if not isinstance(loan_term, int):
+        raise TypeError("Loan term must be an integer")
 
 
-def calculate_compound_interest(
-    principal: float,
-    rate: float,
-    duration: int,
-    compounding_frequency: str
-) -> list:
-    """
-    Calculates the future value of an investment using compound interest formula over each year.
+    if loan_amount < 0:
+        raise ValueError("Loan amount cannot be negative")
+    if annual_interest_rate < 0:
+        raise ValueError("Annual interest rate cannot be negative")
+    if loan_term < 0:
+        raise ValueError("Loan term cannot be negative")
 
-    Args:
-        principal (float): The initial amount of money invested.
-        rate (float): The annual interest rate as a decimal.
-        duration (int): The total number of years for the investment.
-        compounding_frequency (str): 'Monthly' or 'Annually'.
+    if loan_amount == 0:
+        return 0.0
 
-    Returns:
-        list: A list of floating point numbers representing the future value at each year.
+    if annual_interest_rate == 0:
+        return loan_amount / (loan_term * 12)
 
-    Raises:
-        ValueError: If compounding_frequency is invalid.
-        TypeError: If principal, rate, or duration are not numbers or are invalid.
-    """
-    if principal is None or rate is None or duration is None:
-        raise TypeError("Principal, rate, and duration must not be None")
-    if not isinstance(principal, (int, float)):
-        raise TypeError("Principal must be a number")
-    if not isinstance(rate, (int, float)):
-        raise TypeError("Rate must be a number")
-    if not isinstance(duration, int):
-        raise TypeError("Duration must be an integer")
-    if duration < 0:
-        return []
+    if loan_term == 0:
+        raise ZeroDivisionError("Loan term cannot be zero")
 
-    if compounding_frequency == 'Monthly':
-        n = 12
-    elif compounding_frequency == 'Annually':
-        n = 1
-    else:
-        raise ValueError("Invalid compounding frequency. Expected 'Monthly' or 'Annually'.")
+    monthly_interest_rate = annual_interest_rate / 12
+    num_payments = loan_term * 12
 
-    result = []
-    for year in range(1, duration + 1):
-        total_periods = n * year
-        future_value = principal * (1 + rate / n) ** total_periods
-        result.append(future_value)
-    return result
+    try:
+        monthly_payment = (loan_amount * monthly_interest_rate) / (1 - (1 + monthly_interest_rate)**(-num_payments))
+    except ZeroDivisionError:
+        return loan_amount / (loan_term * 12)
+
+    return monthly_payment
